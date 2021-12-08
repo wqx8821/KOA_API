@@ -15,13 +15,13 @@
 
 安装 nodemon 工具
 
-```
+```js
 npm i nodemon -D
 ```
 
 编写`package.json`脚本
 
-```
+```json
 "scripts": {
   "dev": "nodemon ./src/main.js",
   "test": "echo \"Error: no test specified\" && exit 1"
@@ -36,19 +36,19 @@ npm i nodemon -D
 
 安装`dotenv`, 读取根目录中的`.env`文件, 将配置写到`process.env`中
 
-```
+```js
 npm i dotenv
 ```
 
 创建`.env`文件
 
-```
+```js
 APP_PORT=8000
 ```
 
 创建`src/config/config.default.js`
 
-```
+```js
 const dotenv = require('dotenv')
 
 dotenv.config()
@@ -60,7 +60,7 @@ module.exports = process.env
 
 改写`main.js`
 
-```
+```js
 const Koa = require('koa')
 
 const { APP_PORT } = require('./config/config.default')
@@ -78,16 +78,18 @@ app.listen(APP_PORT, () => {
 
 ## 3 安装路由
 
-```
+```js
 npm i @koa/router
 ```
 
 ### 	步骤
 
-	1. 导入包
-	2. 实例化对象
-	3. 编写路由
-	4. 注册中间件
+```ABAP
+1. 导入包
+2. 实例化对象
+3. 编写路由
+4. 注册中间件
+```
 
 ###     拆分路由
 
@@ -122,7 +124,7 @@ const app = new Koa()
  })
 ```
 
-## 5 目录解构优化
+## 4 目录解构优化
 
 ### 1 将http服务和app业务拆分
 
@@ -179,11 +181,11 @@ module.exports = new UserController
 
 
 
-## 4 解析body
+## 5 解析body
 
 1安装koa-body
 
-```
+```js
 npm i koa-body
 ```
 
@@ -234,7 +236,7 @@ ORM：对象关系映射
 
 1 安装sequelize
 
-```
+```js
 npm i sequelize
 npm i 
 ```
