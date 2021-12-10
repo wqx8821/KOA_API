@@ -234,36 +234,138 @@ ORM：对象关系映射
 * 数据表字段对应对象的属性
 * 数据表的操作对应对象的方法
 
-1 安装sequelize
+## 1 安装sequelize
 
 ```js
 npm i sequelize
-npm i 
+npm i mysql2 // mysql版本最低5.7
 ```
 
-2 连接数据库
+## 2 连接数据库
 
 要连接数据库，必须创建一个Sequelize实例，可以通过将连接分别传递到Sequelize，构建函数或通过传递一个连接URl来完成；
 
 ```js
-const { Sequelize } = require('sequelize');
+const { Sequelize } = require('sequelize')
+const {
+  MYSQL_HOST,
+  MYSQL_PORT,
+  MYSQL_USER,
+  MYSQL_PWD,
+  MYSQL_DB,
+} = require('../config/config.default')
+// 实例化对象
+const seq = new Sequelize(MYSQL_DB, MYSQL_USER, MYSQL_PWD, {
+  host: MYSQL_HOST,
+  dialect: 'mysql'
+})
+// 通过authenticate函数测试连接是否成功
+// seq
+//   .authenticate()
+//   .then(() => {
+//     console.log('数据库连接成功')
+//   })
+//   .catch(err => {
+//     console.log('数据库连接失败', err)
+//   })
 
-// Option 1: Passing a connection URI
-const sequelize = new Sequelize('sqlite::memory:') // Example for sqlite
-const sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname') // Example for postgres
-
-// Option 2: Passing parameters separately (sqlite)
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'path/to/database.sqlite'
-});
-
-// Option 3: Passing parameters separately (other dialects)
-const sequelize = new Sequelize('database', 'username', 'password', {
-  host: 'localhost',
-  dialect: /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
-});
+module.exports = seq;
 ```
+
+## 创建数据模型
+
+```js
+const { DataTypes } = require('sequelize')
+// 从seq文件引入Sequelize ，也可直接解构
+const seq = require('../db/sequelize.js')
+
+// 创建模型
+const User = seq.define('User', {
+	 // 表的字段和类型 (id会自动创建)
+	  user_name: {
+	    type: DataTypes.STRING, // 类型U
+	    allowNull: false,   // 字段允许为空
+	    unique: true,  // 唯一性er
+	    comment: '用户名 唯一' // 注释
+	  },
+	  password: {
+	    type: DataTypes.CHAR(64),
+	    allowNull: false, // 字段允许为空
+	    comment: '密码'
+	  },
+	  is_admin: { // 是否为管理员
+	    type: DataTypes.BOOLEAN, 
+	    allowNull: false,
+	    defaultValue: 0,  // 默认值 默认为普通用户
+	    comment: '是否为管理员 0不是 1是'
+	  }
+})
+// 将数据模型同步到数据库 (参考文档模型同步)
+// 创建数据表(创建完成后可注释)
+// User.sync({
+//   force: true, // 若表存在则删除这张表, 重新创建
+// })
+
+module.exports = User
+```
+
+service层处理接受数据
+
+```js
+// 导入数据模型
+const User = require('../model/use.model.js')
+// 操作数据库
+class UserService {
+	async createUser(user_name, password) {
+		// 插入数据
+		const result = await User.create({user_name,password})
+		// 返回数据
+		return result.dataValues
+	}
+}
+
+module.exports = new UserService
+```
+
+user.controller.js 接受 设置响应结果
+
+```js
+const { createUser } = require('../service/user.service.js')
+
+class UserController {
+	// 用户注册接口
+	async register(ctx, next) {
+			// 1 获取数据
+			const {user_name,password} = ctx.request.body;
+			// 2. 操着数据库（处理拆分在 service 层）
+			const res = await createUser(user_name, password);
+			// console.log(result)
+
+			// 3. 返回结果 
+			ctx.body = {
+				code: 0,
+				message: '用户注册成功',
+				result:{
+					id: res.id,
+					user_name: res.user_name
+				}
+			}
+		}
+		async login(ctx, next) {
+			ctx.body = '用户登录接口'
+		}
+	}
+
+	// 导出 实例化后的 对象
+	module.exports = new UserController()
+
+```
+
+## 处理错误
+
+
+
+
 
 
 
