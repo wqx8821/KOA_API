@@ -8,7 +8,7 @@ class UserService {
 		// 返回数据
 		return result.dataValues
 	}
-	// 
+	// 错误处理 判断用户是否存在
 	async getUserInfo({id, user_name, password, is_admin}) {
 		const whereOpt = {}
 		// 短路运算技巧 若参数存在就 将参数拷贝whereOpt中
@@ -25,7 +25,6 @@ class UserService {
 		})
 		// 如果查询到结果 就返回 res.dataValues
 		return res ? res.dataValues : null
-		
 	}
 }
 

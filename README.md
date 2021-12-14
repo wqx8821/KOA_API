@@ -1,7 +1,3 @@
-# KOA2_API
-
-基于Koa2搭建通用APi
-
 搭建 使用的 npm包
 
 * dotenv 可以将 .env文件的内容写入环境变量中
@@ -272,7 +268,7 @@ const seq = new Sequelize(MYSQL_DB, MYSQL_USER, MYSQL_PWD, {
 module.exports = seq;
 ```
 
-## 创建数据模型
+## 3创建数据模型
 
 ```js
 const { DataTypes } = require('sequelize')
@@ -309,7 +305,7 @@ const User = seq.define('User', {
 module.exports = User
 ```
 
-service层处理接受数据
+### 1service层处理接受数据
 
 ```js
 // 导入数据模型
@@ -327,7 +323,9 @@ class UserService {
 module.exports = new UserService
 ```
 
-user.controller.js 接受 设置响应结果
+### 2 接受设置响应结果
+
+`user.controller.js `
 
 ```js
 const { createUser } = require('../service/user.service.js')
@@ -361,7 +359,71 @@ class UserController {
 
 ```
 
-## 处理错误
+# 错误处理
+
+注册--在控制器层 user.controller.js 添加验证
+
+```js
+	// 错误处理 验证 合法性 
+if(!user_name || !password) {
+	console.error('用户名或密码为空',ctx.request.body)
+	ctx.status = 400
+	ctx.body = {
+			code: '100001',
+			message: '用户名或密码为空',
+			result: ''
+	}
+```
+
+注册--判断用户是否已经存在 在service层进行判断
+
+```js
+// 错误处理 判断用户是否存在
+async getUserInfo({id, user_name, password, is_admin}) {
+    const whereOpt = {}
+    // 短路运算技巧 若参数存在就 将参数拷贝whereOpt中
+    id && Object.assign(whereOpt, { id })
+    user_name && Object.assign(whereOpt, { user_name })
+    password && Object.assign(whereOpt, { password })
+    is_admin && Object.assign(whereOpt, { is_admin })
+
+    // findOne 获取查询到的第一个满足的字段
+    const res = await User.findOne({
+        // 要查询的字段
+        attributes: ['id', 'user_name', 'password', 'is_admin'],
+        where: whereOpt
+    })
+    // 如果查询到结果 就返回 res.dataValues
+    return res ? res.dataValues : null
+}
+```
+
+注册--接口错误处理之 用户已存在
+
+```js
+// 验证 合理性 (若用户存在就不调用 createUser())
+// 判断用户是否存在封装在service层 的
+if(getUserInfo({ user_name })) {
+    // 409 冲突的
+    ctx.status = 409,
+    ctx.body = {
+        code: '10002',
+        message: '用户已经存在',
+        result: ''
+    }
+    return
+}
+```
+
+# 拆分中间件
+
+
+
+
+
+# 登录接口
+
+
 
 
 

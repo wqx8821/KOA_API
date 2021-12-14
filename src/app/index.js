@@ -3,11 +3,15 @@ const Koa = require('koa');
 const KoaBody = require('koa-body')
 // 引入拆分后的路由
 const userRouter = require('../router/user.route.js')
-
+// 导入错误处理errhander()
+const errHandler = require('./errHandler.js')
 const app = new Koa()
 // 是个函数 注意加括号
 app.use(KoaBody())
 // 注册中间件 routers()将路由对象转换为函数
 app.use(userRouter.routes())
+
+// 统一错误处理
+app.on('error', errHandler)
 
 module.exports = app
