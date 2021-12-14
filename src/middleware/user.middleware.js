@@ -7,7 +7,10 @@ const {
 const {
 	userAlreadyExited,
 	userFormateError,
-	userRegisterError
+	userRegisterError,
+	userDoesNotExist,
+	userLoginError,
+	invalidPassword
 } = require('../consitant/err.type.js')
 // 中间件 验证器
 const userValidator = async (ctx, next) => {
@@ -54,17 +57,46 @@ const cryptPassword = async (ctx, next) => {
 	// 解构出密码
 	const {password} = ctx.request.body
 	// 加密(加盐)
-	const salt = bcrypt.genSaltSync(10);
+	const salt = bcrypt.genSaltSync(10)
 	// hash保存的是 密文
-	const hash = bcrypt.hashSync("password", salt);
+	const hash = bcrypt.hashSync('password', salt)
 	// 密文将明文覆盖
+	
+	
 	ctx.request.body.password = hash
 	
+	await next()
+}
+// 登录模块
+// 验证用户
+const verifyLogin = async (ctx, next) => {
+	const {user_name,password} = ctx.request.body
+	
+	  try {
+	    const res = await getUserInfo({ user_name })
+	
+	    if (!res) {
+	      console.error('用户名不存在', { user_name })
+	      ctx.app.emit('error', userDoesNotExist, ctx)
+	      return
+	    }
+	
+	    // 2. 密码是否匹配(不匹配: 报错)
+	    if (!bcrypt.compareSync('password', res.password)) {
+	      ctx.app.emit('error', invalidPassword, ctx)
+	      return
+	    }
+	  } catch (err) {
+	    console.error(err)
+	    return ctx.app.emit('error', userLoginError, ctx)
+	  }
+
 	await next()
 }
 
 module.exports = {
 	userValidator,
 	userVerify,
-	cryptPassword
+	cryptPassword,
+	verifyLogin
 }

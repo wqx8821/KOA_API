@@ -25,8 +25,11 @@ class UserController {
 				ctx.app.emit('error', userRegisterError, ctx)
 			}
 		}
+		// 用户登录接口
 		async login(ctx, next) {
-			ctx.body = '用户登录接口'
+			const {user_name} = ctx.request.body
+			
+			ctx.body = `欢迎回来, ${user_name}`
 		}
 	}
 
