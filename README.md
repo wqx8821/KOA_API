@@ -4,6 +4,7 @@
 * koa2  @koa/router  koa-body 框架 路由 解析
 * nodemon 自动启动服务
 * seqelize  mysql2  操作数据库
+* bcrypt.js  密码加密方式
 
 # 项目基本初始化
 
@@ -416,6 +417,143 @@ if(getUserInfo({ user_name })) {
 ```
 
 # 拆分中间件
+
+src/consittant/err.type.js
+
+```js
+// 错误统一处理
+module.exports =  {
+	// 定义错误类型
+	userFormateError: {
+		code: '100001',
+		message: '用户名或密码为空',
+		result: ''
+	},
+	userAlreadyExited: {
+		code: '100002',
+		message: '用户已存在',
+		result: ''
+	},
+	userRegisterError: {
+		code: '100003',
+		message: '用户注册错误',
+		result: ''
+	}
+}
+```
+
+middleware/user.middleware.js
+
+```js
+const {
+	getUserInfo
+} = require('../service/user.service.js')
+// 导入错误统一处理文件 解构错误类型
+const {
+	userAlreadyExited,
+	userFormateError,
+	userRegisterError
+} = require('../consitant/err.type.js')
+// 中间件 验证器
+const userValidator = async (ctx, next) => {
+	const {
+		user_name,
+		password
+	} = ctx.request.body;
+	// 错误处理 验证 合法性
+	if (!user_name || !password) {
+		console.error('用户名或密码为空', ctx.request.body)
+		ctx.app.emit('error', userFormateError, ctx)
+		return
+	}
+	await next()
+}
+// 验证用户 中间件
+const userVerify = async (ctx, next) => {
+	const {
+		user_name
+	} = ctx.request.body;
+	// 验证 合理性 (若用户存在就不调用 createUser())
+	// 判断用户是否存在封装在service层 的
+	try {
+		const res = await getUserInfo({
+			user_name
+		})
+		if (res) {
+			console.error('用户已经存在', {
+				user_name
+			})
+			ctx.app.emit('error', userAlreadyExited, ctx)
+			return
+		}
+	} catch (err) {
+		console.error('获取用户信息错误', err)
+		ctx.app.emit('error', userRegisterError, ctx)
+		return
+	}
+
+	await next()
+}
+module.exports = {
+	userValidator,
+	userVerify
+}
+```
+
+将错误通过 ctx.app.emit()提交
+
+在src/app/errHamder.js
+
+```js
+module.exports = (err, ctx) => {
+	let status = 500
+	switch (err.code) {
+		case '100001':
+		  status = 400
+		break
+		 case '100002':
+		  status = 409
+		break
+		default:
+		  status = 500
+	}
+	ctx.status = status
+	ctx.body = err
+}
+```
+
+# 密码加密
+
+在将密码保存在数据库之前，要对密码进行加密
+
+`bcryptjs` （加密方式）加盐两次 更加安全 
+
+## 1安装
+
+```
+npm i bcryptjs
+```
+
+## 2 加密处理 在注册之前
+
+`router/user.route.js 内的注册接口之前处理`
+
+```js
+// 在middleware/user.middleware.js 下定义中间件
+// 密码加密函数
+const cryptPassword = async (ctx, next) => {
+	// 解构出密码
+	const {password} = ctx.request.body
+	// 加密(加盐)
+	const salt = bcrypt.genSaltSync(10);
+	// hash保存的是 密文
+	const hash = bcrypt.hashSync("password", salt);
+	// 密文将明文覆盖
+	ctx.request.body.password = hash
+	
+	await next()
+}
+```
 
 
 
