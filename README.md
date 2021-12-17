@@ -561,38 +561,54 @@ const cryptPassword = async (ctx, next) => {
 
 # 登录接口
 
+## 密码加密
 
+ bcryptjs
 
+错误处理
 
+1. 第一判断请求是否为空
+2. 第二是校验用户是否存在
+3. 第三是验证密码是否正确
 
+## 颁发token(用户认证)
 
+登录成功后后，给用户颁发一个令牌 token， 用户每次登录请求时候携带这个令牌 token
 
+### 使用jwt
 
+jsonwebtoken 包含三部分
 
-# 接口设计
+1. 头部信息 header ：声明类型，声明加密算法
+2. 载荷 payload  存放有效信息： 注册声明 公共声明 私有声明
+3. 签证信息signature  
 
-注册接口
+### 安装jwt
 
+```ABAP
+npm i jsonwebtoken
+
+生成token 使用sign方法
+res: 用户的id user_name is_admin
+JWT_SECEET: 私钥
+expiresIn： 过期时间
+
+jwt.sign(res, JWT_SECEET, {expiresIn: '7d'})
 ```
-POST /users/register
+
+### 验证token
+
+```ABAP
+每次登录会携带token，token保存在请求头信息中
+authorization: Bearer ‘token’
 ```
 
-​	请求参数
-
+```js
+// 提取用户登录携带的token
+const {authorization} = ctx.request.header
+// 剔除 Bearer加空格
+const token = authorization.replace('Bearer ', '')
 ```
-user_name, pasword
-```
-
-​	响应
-
-```
-
-```
-
-
-
-
-
 
 <!-- echo "# KOA_API" >> README.md
 git init

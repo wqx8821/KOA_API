@@ -3,9 +3,10 @@ const Router = require('@koa/router')
 const {
 	userValidator,
 	userVerify,
-	cryptPassword,
 	verifyLogin
 } = require('../middleware/user.middleware.js')
+// 导入中间件 用户认证
+const {auth} = require('../middleware/auth.middleware.js')
 // 实例化对象 prefix 添加前缀
 const router = new Router({
 	prefix: '/users'
@@ -19,8 +20,16 @@ const {
 router.get('/', (ctx, next) => {
 	ctx.body = '用户接口'
 })
-router.post('/register', userValidator, userVerify, cryptPassword, register)
+// 注册接口
+router.post('/register', userValidator, userVerify, register)
+// 登录接口
 router.post('/login', userValidator, verifyLogin, login)
+// 修改密码
+router.patch('/', auth, (ctx, next) => {
+	console.log(ctx.state.user);
+	ctx.body = '修改密码成功'
+})
+
 
 // 导出路由配置 在外部注册中间件
 module.exports = router

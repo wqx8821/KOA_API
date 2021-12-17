@@ -30,5 +30,15 @@ module.exports =  {
 		code: 100006,
 		message: '密码不匹配',
 		result: ''
+	},
+	tokenExpiredError: {
+		code: 100101,
+		message: 'token已过期',
+		result:''
+	},
+	jsonWebTokenError: {
+		code: 100102,
+		message: '无效token',
+		result: ''
 	}
 }
