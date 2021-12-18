@@ -18,9 +18,9 @@ const {
 	changePassword
 } = require('../controller/user.controller.js')
 // 路由 将路由处理函数拆分到controller中
-router.get('/', (ctx, next) => {
-	ctx.body = '用户接口'
-})
+// router.get('/', (ctx, next) => {
+// 	ctx.body = '用户接口'
+// })
 // 注册接口
 router.post('/register', userValidator, userVerify, register)
 // 登录接口
