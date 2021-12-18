@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const { createUser, getUserInfo } = require('../service/user.service.js')
+const { createUser, getUserInfo, updataByid } = require('../service/user.service.js')
 const {userRegisterError} = require('../consitant/err.type.js')
 const {JWT_SECEET} = require('../config/config.default.js')
 class UserController {
@@ -47,7 +47,32 @@ class UserController {
 				console.error('用户登陆失败', err)
 			}
 		}
-		
+		// 更改密码
+		async changePassword(ctx, next) {
+			// 获取数据
+			const {id}= ctx.state.user
+			const password = ctx.request.body.password
+			// console.log(id, password);
+			// 操作数据库
+			try{
+				if(await updataByid({id, password})) {
+					ctx.body = {
+						code: 0,
+						message: '修改成功',
+						result: ''
+					}
+				} else {
+					ctx.body = {
+						code: 100703,
+						message: '修改不成功',
+						result: ''
+					}
+				}
+			}catch(err){
+				//TODO handle the exception
+			}
+			// 返回结果
+		}
 	}
 
 	// 导出 实例化后的 对象

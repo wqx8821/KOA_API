@@ -5,7 +5,7 @@ const {JWT_SECEET} = require('../config/config.default.js')
 const auth = async (ctx, next) => {
 	const {authorization} = ctx.request.header
 	const token = authorization.replace('Bearer ', '')
-	console.log(token)
+	// console.log(token)
 	// 使用 jwt库函数验证 token
 	try{
 		// 需要两个参数 token 和 私钥

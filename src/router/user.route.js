@@ -14,7 +14,8 @@ const router = new Router({
 // 导入 controller 解构
 const {
 	register,
-	login
+	login,
+	changePassword
 } = require('../controller/user.controller.js')
 // 路由 将路由处理函数拆分到controller中
 router.get('/', (ctx, next) => {
@@ -25,10 +26,7 @@ router.post('/register', userValidator, userVerify, register)
 // 登录接口
 router.post('/login', userValidator, verifyLogin, login)
 // 修改密码
-router.patch('/', auth, (ctx, next) => {
-	console.log(ctx.state.user);
-	ctx.body = '修改密码成功'
-})
+router.patch('/', auth, changePassword)
 
 
 // 导出路由配置 在外部注册中间件
