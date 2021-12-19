@@ -47,8 +47,13 @@ module.exports =  {
 		result: ''
 	},
 	fileuploadError: {
-		code: 100204,
+		code: 100201,
 		message: '图片上传错误',
+		result: ''
+	},
+	unSupportedFileType: {
+		code: 100202,
+		message: '图片格式不匹配',
 		result: ''
 	}
 }
