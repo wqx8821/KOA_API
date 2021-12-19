@@ -11,7 +11,7 @@ const {
 	userDoesNotExist,
 	userLoginError,
 	invalidPassword
-} = require('../consitant/err.type.js')
+} = require('../constant/err.type.js')
 // 中间件 验证器
 const userValidator = async (ctx, next) => {
 	const {

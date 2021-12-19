@@ -45,5 +45,10 @@ module.exports =  {
 		code: 100103,
 		message: '无管理员权限',
 		result: ''
+	},
+	fileuploadError: {
+		code: 100204,
+		message: '图片上传错误',
+		result: ''
 	}
 }

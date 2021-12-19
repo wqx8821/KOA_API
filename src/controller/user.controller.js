@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const { createUser, getUserInfo, updataByid } = require('../service/user.service.js')
-const {userRegisterError} = require('../consitant/err.type.js')
+const {userRegisterError} = require('../constant/err.type.js')
 const {JWT_SECEET} = require('../config/config.default.js')
 class UserController {
 	// 用户注册接口
@@ -69,7 +69,7 @@ class UserController {
 					}
 				}
 			}catch(err){
-				//TODO handle the exception
+				console.error(err)
 			}
 			// 返回结果
 		}

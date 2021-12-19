@@ -5,6 +5,7 @@
 * nodemon 自动启动服务
 * seqelize  mysql2  操作数据库
 * bcrypt.js  密码加密方式
+* kos-static 静态资源搭建
 
 # 项目基本初始化
 
@@ -671,6 +672,49 @@ module.exports = router
 ```
 
 ## 文件上传功能
+
+包koa-body 支持文件上传功能， 但需要手动配置`src/app/inedx.js`
+
+```js
+// multipart 改为true
+multipart {Boolean}解析多部分主体，默认false
+// 手动配置 formidable{uploadDir和keepExtendsions}
+formidable {Object}传递给强大的多部分解析器的选项
+
+具体如：
+app.use(KoaBody({
+	multipart: true,
+	formidable: {
+		// 在配置选项 不推荐使用相对路径，
+		//相对的路径不明确 相对于process.cwd() 相对于执行所在的相对
+		uploadDir: path.join(__dirname, '../upload'),
+		keepExtensions: true
+	}
+}))
+```
+
+文件上传至`src/upload`文件夹下
+
+```ABAP
+koa_body会把上传的文件挂载到request.files 中
+可以通过 ctx.request.files 调用存储文件夹
+上传时的Key作为下一级文件夹
+所以我们使用时应该拼接上key ： ctx.request.files.file
+```
+
+将请求回来的图片名取出
+
+```js
+// 使用path模块取出
+const {file} = ctx.request.files
+path.basename(file.path)
+
+// 为了使浏览器服务下可直接访问文件 需配置静态资源文件夹
+// 使用 koa-static包实现 src/index.js下
+const KoaStatic = require('koa-static')
+// 静态资源文件夹， 传递一个目标目录
+app.use(KoaStatic(path.join(__dirname, '../upload')))
+```
 
 
 

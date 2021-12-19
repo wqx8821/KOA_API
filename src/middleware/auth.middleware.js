@@ -3,14 +3,14 @@ const {
 	tokenExpiredError,
 	jsonWebTokenError,
 	hasNotAdminpermission
-} = require('../consitant/err.type.js')
+} = require('../constant/err.type.js')
 const {
 	JWT_SECEET
 } = require('../config/config.default.js')
 // 判断用户是否登录 中间件
 const auth = async (ctx, next) => {
 	const {
-		authorization
+		authorization = ''
 	} = ctx.request.header
 	const token = authorization.replace('Bearer ', '')
 	// console.log(token)
