@@ -55,5 +55,10 @@ module.exports =  {
 		code: 100202,
 		message: '图片格式不匹配',
 		result: ''
+	},
+	goodsFormatError: {
+		code: 10020,
+		message: '参数格式错误',
+		result: ''
 	}
 }

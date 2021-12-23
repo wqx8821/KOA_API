@@ -6,6 +6,8 @@ const KoaBody = require('koa-body')
 const KoaStatic = require('koa-static')
 // 引入拆分后的路由
 const router = require('../router/index.js')
+// 引入参数校验中间件
+const parmeter = require('koa-parameter')
 // 导入错误处理errhander()
 const errHandler = require('./errHandler.js')
 const app = new Koa()
@@ -21,6 +23,8 @@ app.use(KoaBody({
 }))
 // 静态资源文件夹， 传递一个目标目录
 app.use(KoaStatic(path.join(__dirname, '../upload')))
+// 路由注册之前引入参数校验
+app.use(parmeter(app))
 // 注册中间件 routers()将路由对象转换为函数
 app.use(router.routes())
 app.use(router.allowedMethods())

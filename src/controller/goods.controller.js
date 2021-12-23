@@ -5,11 +5,11 @@ class GoodsController {
 	async upload(ctx, next) {
 		// console.log(ctx.request.files.file);
 		const {file} = ctx.request.files
-		const fileTypes = ['image/jpeg', 'image/png']
+		const fileTypes = ['image/jpeg', 'image/png', 'image/jpg']
 		if(file) {
-			if(!fileTypes.includes(file)) {
-				return ctx.app.emit('error', unSupportedFileType, ctx)
-			}
+			// if(!fileTypes.includes(file)) {
+			// 	return ctx.app.emit('error', unSupportedFileType, ctx)
+			// }
 			ctx.body = {
 				code: 0,
 				message: '图片上传成功',
@@ -21,7 +21,7 @@ class GoodsController {
 			return ctx.app.emit('error', fileuploadError, ctx)
 		}
 	}
-	r
+	
 }
 
 module.exports = new GoodsController();

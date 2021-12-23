@@ -5,7 +5,8 @@
 * nodemon 自动启动服务
 * seqelize  mysql2  操作数据库
 * bcrypt.js  密码加密方式
-* kos-static 静态资源搭建
+* koa-static 静态资源搭建
+* koa-parameter  参数校验库
 
 # 项目基本初始化
 
